@@ -4,26 +4,26 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "TestVo")  
 public class TestVo {
-	private String name;
-	private Integer age;
-	private String gender;
-	public String getName() {
-		return name;
+	private String userName;
+	private String nickName;
+	private String photo;
+	public String getUserName() {
+		return userName;
 	}
-	public void setName(String name) {
-		this.name = name;
+	public void setUserName(String userName) {
+		this.userName = userName;
 	}
-	public Integer getAge() {
-		return age;
+	public String getNickName() {
+		return nickName;
 	}
-	public void setAge(Integer age) {
-		this.age = age;
+	public void setNickName(String nickName) {
+		this.nickName = nickName;
 	}
-	public String getGender() {
-		return gender;
+	public String getPhoto() {
+		return photo;
 	}
-	public void setGender(String gender) {
-		this.gender = gender;
+	public void setPhoto(String photo) {
+		this.photo = photo;
 	}
 	
 }
