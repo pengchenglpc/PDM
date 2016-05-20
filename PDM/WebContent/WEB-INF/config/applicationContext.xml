@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+ 			 xmlns:p="http://www.springframework.org/schema/p"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:context="http://www.springframework.org/schema/context"
+             xmlns:aop="http://www.springframework.org/schema/aop"
+             xmlns:tx="http://www.springframework.org/schema/tx"
+             xmlns:cache="http://www.springframework.org/schema/cache"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans
+                     http://www.springframework.org/schema/beans/spring-beans.xsd
+                     http://www.springframework.org/schema/aop
+                     http://www.springframework.org/schema/aop/spring-aop.xsd
+                     http://www.springframework.org/schema/tx
+                     http://www.springframework.org/schema/tx/spring-tx.xsd
+                     http://www.springframework.org/schema/context 
+    				 http://www.springframework.org/schema/context/spring-context.xsd
+    				 http://www.springframework.org/schema/cache 
+    				 http://www.springframework.org/schema/cache/spring-cache.xsd">
+	<context:annotation-config/>
+	<context:component-scan base-package="com.smis.**.dao,com.smis.**.service"/>
+	
+	<tx:annotation-driven  transaction-manager="transactionManager"/>
+	
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>/WEB-INF/config/db.properties</value>
+			</list>
+		</property>
+	</bean>
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="driverClass" value="com.mysql.jdbc.Driver" />
+		<property name="jdbcUrl" value="${jdbc.url}" />
+		<property name="user" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+		<property name="autoCommitOnClose" value="true"/>
+		<property name="checkoutTimeout" value="${cpool.checkoutTimeout}"/>
+		<property name="initialPoolSize" value="${cpool.minPoolSize}"/>
+		<property name="minPoolSize" value="${cpool.minPoolSize}"/>
+		<property name="maxPoolSize" value="${cpool.maxPoolSize}"/>
+		<property name="maxIdleTime" value="${cpool.maxIdleTime}"/>
+		<property name="acquireIncrement" value="${cpool.acquireIncrement}"/>
+		<property name="maxIdleTimeExcessConnections" value="${cpool.maxIdleTimeExcessConnections}"/>
+	</bean>
+	
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+       <constructor-arg index="0" ref="sqlSessionFactory" />
+    </bean>
+    
+    <!-- 创建SqlSessionFactory -->  
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean"> 
+    	<property name="configLocation" value="/WEB-INF/config/mybatis-configuration.xml"></property> 
+        <property name="dataSource" ref="dataSource" />
+        <property name="mapperLocations" value="classpath:com/smis/**/dao/*.xml"></property>
+    </bean>  
+  
+  	<!-- DAO接口所在包名，Spring会自动查找其下的类 -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.smis.**.dao"/>
+    </bean>
+    
+    <bean name="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">     
+          <property name="dataSource" ref="dataSource"></property>
+    </bean>
+    
+    <tx:advice id="transactionTxAdvice" transaction-manager="transactionManager">
+    	<tx:attributes>
+     	   <tx:method name="delete*" propagation="REQUIRED" read-only="false"  rollback-for="java.lang.Exception" no-rollback-for="java.lang.RuntimeException"/>
+     	   <tx:method name="remove*" propagation="REQUIRED" read-only="false"  rollback-for="java.lang.Exception" no-rollback-for="java.lang.RuntimeException"/>
+     	   <tx:method name="insert*" propagation="REQUIRED" read-only="false"  rollback-for="java.lang.RuntimeException" />
+     	   <tx:method name="add*" propagation="REQUIRED" read-only="false"  rollback-for="java.lang.RuntimeException" />
+           <tx:method name="update*" propagation="REQUIRED" read-only="false"  rollback-for="java.lang.Exception" />
+           <tx:method name="find*" propagation="SUPPORTS"/>
+           <tx:method name="get*" propagation="SUPPORTS"/>
+           <tx:method name="select*" propagation="SUPPORTS"/>
+        </tx:attributes>
+    </tx:advice>
+  
+    <aop:config>    
+        <aop:pointcut id="pc" expression="execution(public * com.smis.**.service.*.*(..))" /> <!--把事务控制在Service层-->
+        <aop:advisor pointcut-ref="pc" advice-ref="transactionTxAdvice" />
+    </aop:config>
+</beans>

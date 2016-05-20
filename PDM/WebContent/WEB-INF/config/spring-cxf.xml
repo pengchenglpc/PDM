@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:util="http://www.springframework.org/schema/util"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jaxws="http://cxf.apache.org/jaxws"
+    xmlns:soap="http://cxf.apache.org/bindings/soap" xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+                        http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://cxf.apache.org/bindings/soap 
+                        http://cxf.apache.org/schemas/configuration/soap.xsd
+                        http://cxf.apache.org/jaxws 
+                        http://cxf.apache.org/schemas/jaxws.xsd
+                        http://cxf.apache.org/jaxrs 
+                        http://cxf.apache.org/schemas/jaxrs.xsd
+                        http://www.springframework.org/schema/util
+                        http://www.springframework.org/schema/util/spring-util.xsd">
+	<util:list id="jsonKeys">
+         <value>app</value>
+         <value>comment</value>
+     </util:list>
+ 
+     <util:list id="jsonTypes">
+         <value>application/json</value>
+         <value>application/jettison</value>
+     </util:list>
+     
+     
+     <bean id="jsonProvider" class="org.apache.cxf.jaxrs.provider.json.JSONProvider">
+		<property name="serializeAsArray" value="true" />
+		<property name="ignoreNamespaces" value="true" />
+		<property name="dropRootElement" value="true" />
+		<property name="ignoreMixedContent" value="true" />
+		<property name="supportUnwrapped" value="true" />
+		<property name="attributesToElements" value="true" />
+	</bean>
+	<jaxrs:server id="test" address="/test">
+		<jaxrs:serviceBeans>
+			<ref bean="testServiceImpl"/>
+		</jaxrs:serviceBeans>
+         <jaxrs:providers>
+         	 <ref bean="jsonProvider"/>
+         </jaxrs:providers>
+	</jaxrs:server>
+</beans>
