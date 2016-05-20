@@ -4,13 +4,14 @@ Ext.define('com.smis.IndexViewport', {
 	layout:'border',
 	 items: [{
 	        region: 'north',
-	        html: '<h1 class="x-panel-header">Page Title</h1>',
-	        border: false,
-	        margins: '0 0 5 0'
+	        html: '<img src="images/smis/top.jpg"/>',
+	        border: false
+	        //margins: '0 0 5 0'
 	    }, {
 	        region: 'west',
 	        collapsible: true,
 	        title: 'Navigation',
+	        border:true,
 	        width: 150
 	        // 这里通常可以使用 TreePanel 或者 AccordionLayout布局的导航菜单
 	    }, {
